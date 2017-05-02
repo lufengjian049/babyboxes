@@ -10,6 +10,8 @@ import {
 
 import { createAction } from '../utils'
 
+import pageDecorator from "../hocs/PageDecorator"
+
 const list = [
   {
     title: '本地音乐',
@@ -37,7 +39,10 @@ const list = [
 //     subtitle: '8首',
 //   },
 // ]
-
+@pageDecorator
+@connect(({ audio }) => ({
+  ...audio,
+}))
 class AudioList extends Component {
   componentDidMount() {
     this.props.dispatch(createAction('audio/loadcategory')())
@@ -45,7 +50,7 @@ class AudioList extends Component {
   render() {
     return (
       <View>
-        <List>
+        <List containerStyle={styles.topListContainer}>
           {
             list.map((item, i) => (
               <ListItem
@@ -59,14 +64,15 @@ class AudioList extends Component {
         <View style={styles.playlistheader}>
           <Text>+创建的歌单</Text>
         </View>
-        <List>
+        <List containerStyle={styles.bottomListContainer}>
           {
             this.props.list.map((item, i) => (
               <ListItem
+                hideChevron
                 key={i}
                 title={item.name}
-                subtitle={item.subtitle}
-                avatar={{ uri: item.avatar_url }}
+                subtitle={item.subtitle || '0首歌'}
+                avatar={{ uri: item.avatar_url || 'http://princekin.vicp.io:90/statics/imgs/collect_default_cover.jpg'}}
               />
             ))
           }
@@ -77,6 +83,15 @@ class AudioList extends Component {
 }
 
 const styles = StyleSheet.create({
+  topListContainer:{
+    marginTop:0,
+    borderTopWidth:0
+  },
+  bottomListContainer:{
+    marginTop:0,
+    borderTopWidth:0,
+    borderBottomWidth:0
+  },
   playlistheader: {
     backgroundColor: '#ccc',
     paddingLeft: 4,
@@ -85,6 +100,8 @@ const styles = StyleSheet.create({
   },
 })
 
-export default connect(({ audio }) => ({
-  ...audio,
-}))(AudioList)
+export default AudioList
+
+// export default connect(({ audio }) => ({
+//   ...audio,
+// }))(AudioList)
