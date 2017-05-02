@@ -16,6 +16,7 @@ const request = (urlPrefix) => (url, method = 'get', body) => {
       method,
       body,
     })
+    .then(response => response.json())
     .then(checkstatus)
     .then(response => {
       resolve(response.data)

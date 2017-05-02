@@ -2,9 +2,13 @@ import React, { Component } from 'react'
 
 import { StyleSheet, Text, View } from 'react-native'
 
+import { connect } from 'dva/mobile'
+
 import {
   List, ListItem,
 } from 'react-native-elements'
+
+import { createAction } from '../utils'
 
 const list = [
   {
@@ -21,20 +25,23 @@ const list = [
   },
 ]
 
-const list2 = [
-  {
-    name: '歌单1',
-    avatar_url: 'https://http://princekin.vicp.io:90/statics/imgs/collect_default_cover.jpg',
-    subtitle: '0首',
-  },
-  {
-    name: 'test歌单2',
-    avatar_url: 'https://http://princekin.vicp.io:90/statics/imgs/collect_default_cover.jpg',
-    subtitle: '8首',
-  },
-]
+// const list2 = [
+//   {
+//     name: '歌单1',
+//     avatar_url: 'https://http://princekin.vicp.io:90/statics/imgs/collect_default_cover.jpg',
+//     subtitle: '0首',
+//   },
+//   {
+//     name: 'test歌单2',
+//     avatar_url: 'https://http://princekin.vicp.io:90/statics/imgs/collect_default_cover.jpg',
+//     subtitle: '8首',
+//   },
+// ]
 
 class AudioList extends Component {
+  componentDidMount() {
+    this.props.dispatch(createAction('audio/loadcategory')())
+  }
   render() {
     return (
       <View>
@@ -54,7 +61,7 @@ class AudioList extends Component {
         </View>
         <List>
           {
-            list2.map((item, i) => (
+            this.props.list.map((item, i) => (
               <ListItem
                 key={i}
                 title={item.name}
@@ -78,4 +85,6 @@ const styles = StyleSheet.create({
   },
 })
 
-export default AudioList
+export default connect(({ audio }) => ({
+  ...audio,
+}))(AudioList)

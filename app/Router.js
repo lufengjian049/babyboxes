@@ -13,9 +13,9 @@ const TabIcon = (props) => (
     )
 
 const RouterComponent = () => (
-  <Router sceneStyle={{ paddingTop: 40 }}>
+  <Router sceneStyle={{ paddingTop: 0 }}>
     <Scene key="main" hideNavBar>
-      <Scene key="tabbar" tabs tabBarStyle={{ backgroundColor: '#FFF', borderTopWidth: 1, borderTopColor: '#BBB' }}>
+      <Scene key="tabbar" tabs tabBarStyle={{ backgroundColor: '#FFF', borderTopWidth: 1, borderTopColor: '#BBB', paddingTop: 30 }}>
         <Scene key="audiolist" initial title="Music" icon={TabIcon} tabIcon="home" navigationBarStyle={{ backgroundColor: '#ffdb42' }}>
           <Scene key="article" component={AudioList} title="歌曲列表" />
         </Scene>
