@@ -74,7 +74,7 @@ class AudioList extends Component {
             }
           </List>
           <View style={styles.playlistheader}>
-            <Text>+创建的歌单</Text>
+            <Text>已创建的歌单({this.props.list.length || ''})</Text>
           </View>
           <List containerStyle={styles.bottomListContainer}>
             {
@@ -99,6 +99,7 @@ const styles = StyleSheet.create({
   topListContainer: {
     marginTop: 0,
     borderTopWidth: 0,
+    borderBottomWidth: 0,
   },
   bottomListContainer: {
     marginTop: 0,
@@ -106,8 +107,8 @@ const styles = StyleSheet.create({
     borderBottomWidth: 0,
   },
   playlistheader: {
-    backgroundColor: '#ccc',
-    paddingLeft: 4,
+    backgroundColor: '#EDEDED',
+    paddingLeft: 8,
     height: 30,
     justifyContent: 'center',
   },
