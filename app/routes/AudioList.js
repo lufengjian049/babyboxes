@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 
-import { StyleSheet, Text, View } from 'react-native'
+import { StyleSheet, Text, View, ScrollView, RefreshControl } from 'react-native'
 
 import { connect } from 'dva/mobile'
 
@@ -10,7 +10,7 @@ import {
 
 import { createAction } from '../utils'
 
-import pageDecorator from "../hocs/PageDecorator"
+import pageDecorator from '../hocs/PageDecorator'
 
 const list = [
   {
@@ -27,70 +27,83 @@ const list = [
   },
 ]
 
-// const list2 = [
-//   {
-//     name: '歌单1',
-//     avatar_url: 'https://http://princekin.vicp.io:90/statics/imgs/collect_default_cover.jpg',
-//     subtitle: '0首',
-//   },
-//   {
-//     name: 'test歌单2',
-//     avatar_url: 'https://http://princekin.vicp.io:90/statics/imgs/collect_default_cover.jpg',
-//     subtitle: '8首',
-//   },
-// ]
 @pageDecorator
 @connect(({ audio }) => ({
   ...audio,
 }))
 class AudioList extends Component {
+  constructor(props) {
+    super(props)
+    this.refreshData = this.refreshData.bind(this)
+  }
   componentDidMount() {
+    this.refreshData()
+  }
+  refreshData() {
     this.props.dispatch(createAction('audio/loadcategory')())
   }
   render() {
+    let refreshTitle = '下拉刷新...'
+    if (this.props.fetching) {
+      refreshTitle = '加载中...'
+    }
     return (
       <View>
-        <List containerStyle={styles.topListContainer}>
-          {
-            list.map((item, i) => (
-              <ListItem
-                key={`ddd${i}`}
-                title={item.title}
-                leftIcon={{ name: item.icon, type: 'ionicon' }}
-              />
-            ))
-          }
-        </List>
-        <View style={styles.playlistheader}>
-          <Text>+创建的歌单</Text>
-        </View>
-        <List containerStyle={styles.bottomListContainer}>
-          {
-            this.props.list.map((item, i) => (
-              <ListItem
-                hideChevron
-                key={i}
-                title={item.name}
-                subtitle={item.subtitle || '0首歌'}
-                avatar={{ uri: item.avatar_url || 'http://princekin.vicp.io:90/statics/imgs/collect_default_cover.jpg'}}
-              />
-            ))
-          }
-        </List>
+        <ScrollView
+          refreshControl={
+            <RefreshControl
+              refreshing={this.props.fetching}
+              onRefresh={this.refreshData}
+              tintColor="#ff0000"
+              title={refreshTitle}
+              titleColor="#00ff00"
+              colors={['#ff0000', '#00ff00', '#0000ff']}
+              progressBackgroundColor="#ffff00"
+            />
+                }
+        >
+          <List containerStyle={styles.topListContainer}>
+            {
+              list.map((item, i) => (
+                <ListItem
+                  key={`toplistitem${i}`}
+                  title={item.title}
+                  leftIcon={{ name: item.icon, type: 'ionicon' }}
+                />
+              ))
+            }
+          </List>
+          <View style={styles.playlistheader}>
+            <Text>+创建的歌单</Text>
+          </View>
+          <List containerStyle={styles.bottomListContainer}>
+            {
+              this.props.list.map((item, i) => (
+                <ListItem
+                  hideChevron
+                  key={i}
+                  title={item.name}
+                  subtitle={item.subtitle || '0首歌'}
+                  avatar={{ uri: item.avatar_url || 'http://princekin.vicp.io:90/statics/imgs/collect_default_cover.jpg' }}
+                />
+              ))
+            }
+          </List>
+        </ScrollView>
       </View>
     )
   }
 }
 
 const styles = StyleSheet.create({
-  topListContainer:{
-    marginTop:0,
-    borderTopWidth:0
+  topListContainer: {
+    marginTop: 0,
+    borderTopWidth: 0,
   },
-  bottomListContainer:{
-    marginTop:0,
-    borderTopWidth:0,
-    borderBottomWidth:0
+  bottomListContainer: {
+    marginTop: 0,
+    borderTopWidth: 0,
+    borderBottomWidth: 0,
   },
   playlistheader: {
     backgroundColor: '#ccc',

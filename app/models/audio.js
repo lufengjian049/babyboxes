@@ -7,6 +7,8 @@ import { loadAudioCategory } from '../services/audio'
 export default {
   namespace: 'audio',
   state: {
+    // TODO: 如何在外层router 触发actions
+    showAudioListMask: false,
     fetching: false,
     loaded: false,
     list: [],
@@ -20,6 +22,9 @@ export default {
     },
     loadcategoryEnd(state, { payload }) {
       return { ...state, ...payload }
+    },
+    toggleAudioListMask(state) {
+      return { ...state, showAudioListMask: !state.showAudioListMask }
     },
   },
   effects: {
