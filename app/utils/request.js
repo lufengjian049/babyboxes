@@ -10,7 +10,8 @@ function checkstatus(response) {
 }
 
 const request = (urlPrefix) => (url, method = 'get', body) => {
-  const requrl = `http://princekin.vicp.io:90${urlPrefix}${url}`
+  const requrl = `http://localhost:8090${urlPrefix}${url}`
+  // const requrl = `http://princekin.vicp.io:90${urlPrefix}${url}`
   return new Promise((resolve, reject) => {
     fetch(requrl, {
       method,

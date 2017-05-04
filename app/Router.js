@@ -5,6 +5,7 @@ import Icon from 'react-native-vector-icons/FontAwesome'
 import AudioList from './routes/AudioList'
 import Account from './routes/Account'
 import AddAudioCategory from './routes/AddAudioCategory'
+import StatusModal from './components/StatusModal'
 
 const TabIcon = (props) => (
   <View style={{ justifyContent: 'center', alignItems: 'center' }}>
@@ -42,6 +43,7 @@ const styles = StyleSheet.create({
 //   }
 //   return style
 // }
+// Actions.popAddPage()  Actions.statusModal({ error: 'Network failed...', hide: false })}
 
 const RouterComponent = () => (
   <Router>
@@ -52,9 +54,12 @@ const RouterComponent = () => (
             key="addaudiocategory" component={AddAudioCategory} title="新增歌单" panHandlers={null}
             navigationBarStyle={styles.navigationBarStyle} leftTitle="取消" onLeft={Actions.pop}
             leftButtonTextStyle={styles.navBarButtonTextStyle} leftButtonStyle={styles.navBarButtonStyle}
-            rightTitle="完成" onRight={() => alert('complete...')}
+            rightTitle="完成" onRight={() => Actions.savecategory()}
             rightButtonTextStyle={styles.navBarButtonTextStyle} rightButtonStyle={styles.navBarButtonStyle}
-          />
+          >
+            <Scene key="addcategoryview" />
+            <Scene key="savecategory" onleftSave />
+          </Scene>
         </Scene>
         <Scene key="tabbar" initial tabs tabBarStyle={{ backgroundColor: '#FFF', borderTopWidth: 1, borderTopColor: '#BBB' }}>
           <Scene key="audiolist" initial title="Music" icon={TabIcon} tabIcon="home" navigationBarStyle={styles.navigationBarStyle}>
@@ -68,6 +73,7 @@ const RouterComponent = () => (
           </Scene>
         </Scene>
       </Scene>
+      <Scene key="statusModal" component={StatusModal} />
     </Scene>
   </Router>
   )

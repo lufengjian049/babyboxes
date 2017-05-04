@@ -1,5 +1,6 @@
 import { createAction } from '../utils'
-import { loadAudioCategory } from '../services/audio'
+// import { loadAudioCategory, } from '../services/audio'
+import * as audioService from '../services/audio'
 
 // NavigationActions
 // loadAudioById
@@ -26,6 +27,14 @@ export default {
     toggleAudioListMask(state) {
       return { ...state, showAudioListMask: !state.showAudioListMask }
     },
+    // 添加分类
+    appendcategoryStart(state, { payload }) {
+      return { ...state, ...payload }
+    },
+    appendcategoryEnd(state, { payload }) {
+      const { fetching, loaded, addedcategory } = payload
+      return { ...state, list: [addedcategory, ...state.list], fetching, loaded }
+    },
   },
   effects: {
     * loadcategory({ payload }, { put, call }) {
@@ -34,7 +43,7 @@ export default {
           fetching: true,
         }),
       )
-      const categorys = yield call(loadAudioCategory)
+      const categorys = yield call(audioService.loadAudioCategory)
       yield put(
         createAction('loadcategoryEnd')({
           list: categorys,
@@ -42,16 +51,22 @@ export default {
           loaded: true,
         }),
       )
-    //   const login = yield call(authService.login, payload)
-      // const login = false
-      // if (login) {
-      //   yield put(
-      //     NavigationActions.reset({
-      //       index: 0,
-      //       actions: [NavigationActions.navigate({ routeName: 'Main' })],
-      //     }),
-      //   )
-      // }
+    },
+    * addcategory({ payload }, { put, call }) {
+      yield put(
+        createAction('appendcategoryStart')({
+          fetching: true,
+        }),
+      )
+      const { name } = payload
+      const addedcategory = yield call(audioService.addCategory, name)
+      yield put(
+        createAction('appendcategoryEnd')({
+          addedcategory,
+          fetching: false,
+          loaded: true,
+        }),
+      )
     },
   },
 }
