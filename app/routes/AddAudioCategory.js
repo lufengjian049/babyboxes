@@ -4,11 +4,16 @@ import { StyleSheet, View, TextInput } from 'react-native'
 
 import { Actions } from 'react-native-router-flux'
 
+import { connect } from 'dva/mobile'
+
 import pageDecorator from '../hocs/PageDecorator'
 
 import { window } from '../utils/constants'
 
 @pageDecorator
+@connect(({ audio }) => ({
+  ...audio,
+}))
 class AddAudioCategory extends Component {
   constructor(props) {
     super(props)
@@ -17,12 +22,16 @@ class AddAudioCategory extends Component {
     }
     this.changeTextHandle = this.changeTextHandle.bind(this)
     this.saveCategory = this.saveCategory.bind(this)
+    this.saveCategoryComplete = this.saveCategoryComplete.bind(this)
   }
   componentWillReceiveProps(nextProps) {
     console.log(`onleftSave-next-${nextProps.onleftSave}`)
     console.log(`onleftSave-this-${this.props.onleftSave}`)
     if (nextProps.onleftSave && nextProps.onleftSave !== this.props.onleftSave) {
       this.saveCategory()
+    }
+    if (!nextProps.fetching && nextProps.loaded && this.props.fetching !== nextProps.fetching && this.props.loaded !== nextProps.loaded){
+      this.saveCategoryComplete()
     }
   }
   changeTextHandle(text) {
@@ -41,9 +50,13 @@ class AddAudioCategory extends Component {
         },
       })
     } else {
-      // 保存成功后
-      Actions.pop()
+      this.props.dispatch(this.props.createAction("audio/addcategory")({name:this.state.inputvalue}))
     }
+  }
+  saveCategoryComplete() {
+    this.props.showToast("标题添加成功",()=>{
+      Actions.pop()
+    })
   }
   render() {
     return (

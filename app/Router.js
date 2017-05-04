@@ -1,7 +1,8 @@
 import React from 'react'
 import { View, Text, StyleSheet } from 'react-native'
 import { Scene, Router, Actions, Modal } from 'react-native-router-flux'
-import Icon from 'react-native-vector-icons/FontAwesome'
+// import Icon from 'react-native-vector-icons/FontAwesome'
+import { FontAwesome } from '@expo/vector-icons'
 import AudioList from './routes/AudioList'
 import Account from './routes/Account'
 import AddAudioCategory from './routes/AddAudioCategory'
@@ -9,7 +10,7 @@ import StatusModal from './components/StatusModal'
 
 const TabIcon = (props) => (
   <View style={{ justifyContent: 'center', alignItems: 'center' }}>
-    <Icon name={props.tabIcon} size={20} color={props.selected ? '#FFDB42' : '#BBB'} />
+    <FontAwesome name={props.tabIcon} size={20} color={props.selected ? '#FFDB42' : '#BBB'} />
     <Text style={{ color: props.selected ? '#FFDB42' : '#BBB', marginTop: 5, fontSize: 12 }}>{props.title}</Text>
   </View>
     )

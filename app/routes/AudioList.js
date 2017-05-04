@@ -8,8 +8,6 @@ import {
   List, ListItem,
 } from 'react-native-elements'
 
-import { createAction } from '../utils'
-
 import pageDecorator from '../hocs/PageDecorator'
 
 const list = [
@@ -40,7 +38,7 @@ class AudioList extends Component {
     this.refreshData()
   }
   refreshData() {
-    this.props.dispatch(createAction('audio/loadcategory')())
+    this.props.dispatch(this.props.createAction('audio/loadcategory')())
   }
   render() {
     let refreshTitle = '下拉刷新...'

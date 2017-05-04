@@ -3,6 +3,7 @@ import React, { Component } from 'react'
 import { View, StyleSheet, Platform, Alert } from 'react-native'
 import { alertTitle } from '../utils/constants'
 import Toast from 'react-native-root-toast'
+import { createAction } from '../utils'
 
 const pageDecorator = WrappedComponent => {
   class PageDecorator extends Component {
@@ -30,14 +31,19 @@ const pageDecorator = WrappedComponent => {
         btnArr,
         { cancelable: false })
     }
-    showToast(){
-      
+    showToast(msg,hideCallback){
+      Toast.show(msg,{
+          duration:500,
+          position:Toast.positions.CENTER,
+          onHide:hideCallback
+      })
     }
     render() {
       console.log('page decorator')
       return (
         <View style={styles.container}>
-          <WrappedComponent {...this.props} alertmsg={this.alertMessage} />
+          <WrappedComponent {...this.props} alertmsg={this.alertMessage} 
+                createAction={createAction} showToast={this.showToast}/>
         </View>
       )
     }

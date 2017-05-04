@@ -1,5 +1,5 @@
 import { createAction } from '../utils'
-// import { loadAudioCategory, } from '../services/audio'
+// import { loadAudioCategory, addAudioCategory} from '../services/audio'
 import * as audioService from '../services/audio'
 
 // NavigationActions
@@ -56,10 +56,11 @@ export default {
       yield put(
         createAction('appendcategoryStart')({
           fetching: true,
+          loaded: false,
         }),
       )
       const { name } = payload
-      const addedcategory = yield call(audioService.addCategory, name)
+      const addedcategory = yield call(audioService.addAudioCategory, name)
       yield put(
         createAction('appendcategoryEnd')({
           addedcategory,

@@ -10,10 +10,10 @@ export function loadAudioById(id) {
   return audioRequest('audiolistbyid', 'post', { id })
 }
 
-export function addCategory(name) {
+export function addAudioCategory(name) {
   return audioRequest('addcategory', 'post', { name })
 }
 
-export function delCategory(id) {
+export function delAudioCategory(id) {
   return audioRequest(id, 'delete')
 }
