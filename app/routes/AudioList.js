@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 
-import { StyleSheet, Text, View, ScrollView, RefreshControl } from 'react-native'
+import { StyleSheet, Text, View, ScrollView, RefreshControl, TouchableHighlight } from 'react-native'
 
 import { connect } from 'dva/mobile'
 
@@ -77,13 +77,7 @@ class AudioList extends Component {
           <List containerStyle={styles.bottomListContainer}>
             {
               this.props.list.map((item, i) => (
-                <ListItem
-                  hideChevron
-                  key={i}
-                  title={item.name}
-                  subtitle={item.subtitle || '0首歌'}
-                  avatar={{ uri: item.avatar_url || 'http://princekin.vicp.io:90/statics/imgs/collect_default_cover.jpg' }}
-                />
+                <AudioListItem key={`item${i}`} {...item} />
               ))
             }
           </List>
@@ -92,6 +86,18 @@ class AudioList extends Component {
     )
   }
 }
+
+const AudioListItem = (props) => (
+  <TouchableHighlight>
+    <ListItem
+      hideChevron
+      key={props.key}
+      title={props.name}
+      subtitle={props.subtitle || '0首歌'}
+      avatar={{ uri: props.avatar_url || 'http://princekin.vicp.io:90/statics/imgs/collect_default_cover.jpg' }}
+    />
+  </TouchableHighlight>
+  )
 
 const styles = StyleSheet.create({
   topListContainer: {

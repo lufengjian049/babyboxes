@@ -13,13 +13,13 @@ const request = (urlPrefix) => (url, method = 'get', body) => {
   // const requrl = `http://localhost:8090${urlPrefix}${url}`
   const requrl = `http://princekin.vicp.io:90${urlPrefix}${url}`
   return new Promise((resolve, reject) => {
-    let fetchPromise = method !== 'post' ? fetch(requrl) : fetch(requrl,{
-        method:"POST",
-        headers:{
-            "Accept":"application/json",
-            "Content-Type":"application/json"
-        },
-        body:JSON.stringify(body)
+    const fetchPromise = method !== 'post' ? fetch(requrl) : fetch(requrl, {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body),
     })
     fetchPromise.then(response => response.json())
     .then(checkstatus)

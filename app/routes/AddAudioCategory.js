@@ -30,7 +30,7 @@ class AddAudioCategory extends Component {
     if (nextProps.onleftSave && nextProps.onleftSave !== this.props.onleftSave) {
       this.saveCategory()
     }
-    if (!nextProps.fetching && nextProps.loaded && this.props.fetching !== nextProps.fetching && this.props.loaded !== nextProps.loaded){
+    if (!nextProps.fetching && nextProps.loaded && this.props.fetching !== nextProps.fetching && this.props.loaded !== nextProps.loaded) {
       this.saveCategoryComplete()
     }
   }
@@ -50,11 +50,11 @@ class AddAudioCategory extends Component {
         },
       })
     } else {
-      this.props.dispatch(this.props.createAction("audio/addcategory")({name:this.state.inputvalue}))
+      this.props.dispatch(this.props.createAction('audio/addcategory')({ name: this.state.inputvalue }))
     }
   }
   saveCategoryComplete() {
-    this.props.showToast("标题添加成功",()=>{
+    this.props.showToast('标题添加成功', () => {
       Actions.pop()
     })
   }
