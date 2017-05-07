@@ -35,6 +35,11 @@ export default {
       const { fetching, loaded, addedcategory } = payload
       return { ...state, list: [addedcategory, ...state.list], fetching, loaded }
     },
+    // 删除分类
+    delcategoryEnd(state, { payload }) {
+      const lastlist = state.list.filter((item) => item.id !== payload.id)
+      return { ...state, list: [...lastlist] }
+    },
   },
   effects: {
     * loadcategory({ payload }, { put, call }) {
@@ -68,6 +73,16 @@ export default {
           loaded: true,
         }),
       )
+    },
+    * delcategory({ payload }, { put, call }) {
+      const { id } = payload
+      const delcount = yield call(audioService.delAudioCategory, id)
+      if(delcount > 0)
+        yield put(
+          createAction('delcategoryEnd')({
+            id
+          }),
+        )
     },
   },
 }

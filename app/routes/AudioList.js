@@ -10,6 +10,8 @@ import {
 
 import pageDecorator from '../hocs/PageDecorator'
 
+import SwipeItem from '../components/SwipeItem'
+
 const list = [
   {
     title: '本地音乐',
@@ -33,12 +35,24 @@ class AudioList extends Component {
   constructor(props) {
     super(props)
     this.refreshData = this.refreshData.bind(this)
+    this.deleteHandle = this.deleteHandle.bind(this)
+    this.listitemHandle = this.listitemHandle.bind(this)
+    this.state = {
+      scrollEnable: true,
+    }
   }
   componentDidMount() {
     this.refreshData()
   }
   refreshData() {
     this.props.dispatch(this.props.createAction('audio/loadcategory')())
+  }
+  listitemHandle() {
+    this.props.actions.audiodetail()
+    console.log('clicked item')
+  }
+  deleteHandle(id) {
+    this.props.dispatch(this.props.createAction('audio/delcategory')({id}))
   }
   render() {
     let refreshTitle = '下拉刷新...'
@@ -48,6 +62,7 @@ class AudioList extends Component {
     return (
       <View>
         <ScrollView
+          scrollEnabled={this.state.scrollEnable}
           refreshControl={
             <RefreshControl
               refreshing={this.props.fetching}
@@ -77,7 +92,10 @@ class AudioList extends Component {
           <List containerStyle={styles.bottomListContainer}>
             {
               this.props.list.map((item, i) => (
-                <AudioListItem key={`item${i}`} {...item} />
+                <AudioListItem
+                  key={`item${i}`} {...item} listitemHandle={this.listitemHandle}
+                  root={this} deleteHandle={this.deleteHandle}
+                />
               ))
             }
           </List>
@@ -88,16 +106,28 @@ class AudioList extends Component {
 }
 
 const AudioListItem = (props) => (
-  <TouchableHighlight>
+  <SwipeItem root={props.root} deleteHandle={() => props.deleteHandle(props.id)}>
     <ListItem
       hideChevron
-      key={props.key}
       title={props.name}
+      onPress={props.listitemHandle}
       subtitle={props.subtitle || '0首歌'}
       avatar={{ uri: props.avatar_url || 'http://princekin.vicp.io:90/statics/imgs/collect_default_cover.jpg' }}
     />
-  </TouchableHighlight>
+  </SwipeItem>
   )
+
+  /* const AudioListItem = (props) => {
+    return (
+        <ListItem
+          hideChevron
+          title={props.name}
+          onPress={props.listitemHandle}
+          subtitle={props.subtitle || '0首歌'}
+          avatar={{ uri: props.avatar_url || 'http://princekin.vicp.io:90/statics/imgs/collect_default_cover.jpg' }}
+        />
+      )
+  }*/
 
 const styles = StyleSheet.create({
   topListContainer: {

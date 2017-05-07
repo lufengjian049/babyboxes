@@ -2,6 +2,7 @@
 import React, { Component } from 'react'
 import Toast from 'react-native-root-toast'
 import { View, StyleSheet, Platform, Alert } from 'react-native'
+import { Actions } from 'react-native-router-flux'
 import { alertTitle } from '../utils/constants'
 import { createAction } from '../utils'
 
@@ -43,7 +44,7 @@ const pageDecorator = WrappedComponent => {
       return (
         <View style={styles.container}>
           <WrappedComponent
-            {...this.props} alertmsg={this.alertMessage}
+            {...this.props} alertmsg={this.alertMessage} actions={Actions}
             createAction={createAction} showToast={this.showToast}
           />
         </View>

@@ -7,6 +7,7 @@ import AudioList from './routes/AudioList'
 import Account from './routes/Account'
 import AddAudioCategory from './routes/AddAudioCategory'
 import StatusModal from './components/StatusModal'
+import AudioDetail from './routes/AudioDetail'
 
 const TabIcon = (props) => (
   <View style={{ justifyContent: 'center', alignItems: 'center' }}>
@@ -72,6 +73,8 @@ const RouterComponent = () => (
           <Scene key="account" title="account" icon={TabIcon} tabIcon="circle-o" navigationBarStyle={styles.navigationBarStyle}>
             <Scene key="ooxx" component={Account} title="账号" />
           </Scene>
+        </Scene>
+        <Scene key="audiodetail" component={AudioDetail} navigationBarStyle={styles.navigationBarStyle} title="歌单详情" hideNavBar={false}>
         </Scene>
       </Scene>
       <Scene key="statusModal" component={StatusModal} />
