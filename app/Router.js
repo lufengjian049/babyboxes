@@ -74,8 +74,7 @@ const RouterComponent = () => (
             <Scene key="ooxx" component={Account} title="账号" />
           </Scene>
         </Scene>
-        <Scene key="audiodetail" component={AudioDetail} navigationBarStyle={styles.navigationBarStyle} title="歌单详情" hideNavBar={false}>
-        </Scene>
+        <Scene key="audiodetail" component={AudioDetail} navigationBarStyle={styles.navigationBarStyle} title="歌单详情" hideNavBar={false} />
       </Scene>
       <Scene key="statusModal" component={StatusModal} />
     </Scene>

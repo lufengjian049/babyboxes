@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 
-import { StyleSheet, Text, View, ScrollView, RefreshControl, TouchableHighlight } from 'react-native'
+import { StyleSheet, Text, View, ScrollView, RefreshControl } from 'react-native'
 
 import { connect } from 'dva/mobile'
 
@@ -11,6 +11,8 @@ import {
 import pageDecorator from '../hocs/PageDecorator'
 
 import SwipeItem from '../components/SwipeItem'
+
+import ViewPort from '../components/ViewPort'
 
 const list = [
   {
@@ -47,12 +49,11 @@ class AudioList extends Component {
   refreshData() {
     this.props.dispatch(this.props.createAction('audio/loadcategory')())
   }
-  listitemHandle() {
-    this.props.actions.audiodetail()
-    console.log('clicked item')
+  listitemHandle(id) {
+    this.props.actions.audiodetail({ id })
   }
   deleteHandle(id) {
-    this.props.dispatch(this.props.createAction('audio/delcategory')({id}))
+    this.props.dispatch(this.props.createAction('audio/delcategory')({ id }))
   }
   render() {
     let refreshTitle = '下拉刷新...'
@@ -60,7 +61,7 @@ class AudioList extends Component {
       refreshTitle = '加载中...'
     }
     return (
-      <View>
+      <ViewPort>
         <ScrollView
           scrollEnabled={this.state.scrollEnable}
           refreshControl={
@@ -100,7 +101,7 @@ class AudioList extends Component {
             }
           </List>
         </ScrollView>
-      </View>
+      </ViewPort>
     )
   }
 }
@@ -110,7 +111,7 @@ const AudioListItem = (props) => (
     <ListItem
       hideChevron
       title={props.name}
-      onPress={props.listitemHandle}
+      onPress={() => props.listitemHandle(props.id)}
       subtitle={props.subtitle || '0首歌'}
       avatar={{ uri: props.avatar_url || 'http://princekin.vicp.io:90/statics/imgs/collect_default_cover.jpg' }}
     />

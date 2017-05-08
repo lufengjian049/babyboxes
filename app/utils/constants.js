@@ -12,7 +12,12 @@ const alertTitle = {
   confirm: '确认',
 }
 
+const themeColor = {
+  theme1: '#ffdb42',
+}
+
 export {
     window,
     alertTitle,
+    themeColor,
 }

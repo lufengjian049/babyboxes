@@ -13,6 +13,7 @@ export default {
     fetching: false,
     loaded: false,
     list: [],
+    audios: {},
   },
   // subscriptions: {
 
@@ -39,6 +40,19 @@ export default {
     delcategoryEnd(state, { payload }) {
       const lastlist = state.list.filter((item) => item.id !== payload.id)
       return { ...state, list: [...lastlist] }
+    },
+    // 获取分类下数据
+    getAudioByIdStart(state, { payload }) {
+      return { ...state, ...payload }
+    },
+    getAudioByIdEnd(state, { payload }) {
+      const { fetching, loaded, audios } = payload
+      return { ...state,
+        fetching,
+        loaded,
+        audios: {
+          [payload.id]: audios,
+        } }
     },
   },
   effects: {
@@ -77,12 +91,31 @@ export default {
     * delcategory({ payload }, { put, call }) {
       const { id } = payload
       const delcount = yield call(audioService.delAudioCategory, id)
-      if(delcount > 0)
+      if (delcount > 0) {
         yield put(
           createAction('delcategoryEnd')({
-            id
+            id,
           }),
         )
+      }
+    },
+    * getAudioById({ payload }, { put, call }) {
+      yield put(
+        createAction('getAudioByIdStart')({
+          fetching: true,
+          loaded: false,
+        }),
+      )
+      const { id } = payload
+      const audios = yield call(audioService.loadAudioById, id)
+      yield put(
+        createAction('getAudioByIdEnd')({
+          audios,
+          id,
+          fetching: false,
+          loaded: true,
+        }),
+      )
     },
   },
 }

@@ -59,7 +59,8 @@ export default pageDecorator
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: Platform.OS === 'ios' ? 64 : 54,
-    paddingBottom: 50,
+    // height: window.height-280,
+    // paddingTop: Platform.OS === 'ios' ? 64 : 54,
+    // paddingBottom: 50,
   },
 })

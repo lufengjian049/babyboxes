@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 
-import { StyleSheet, View, TextInput } from 'react-native'
+import { StyleSheet, TextInput } from 'react-native'
 
 import { Actions } from 'react-native-router-flux'
 
@@ -8,7 +8,7 @@ import { connect } from 'dva/mobile'
 
 import pageDecorator from '../hocs/PageDecorator'
 
-import { window } from '../utils/constants'
+import ViewPort from '../components/ViewPort'
 
 @pageDecorator
 @connect(({ audio }) => ({
@@ -60,7 +60,7 @@ class AddAudioCategory extends Component {
   }
   render() {
     return (
-      <View style={styles.container}>
+      <ViewPort style={styles.container}>
         <TextInput
           ref={(ref) => { this.addcategoryinput = ref }}
           autoFocus style={styles.textInputStyle}
@@ -68,7 +68,7 @@ class AddAudioCategory extends Component {
           value={this.state.inputvalue}
           onChangeText={this.changeTextHandle}
         />
-      </View>
+      </ViewPort>
     )
   }
 }
@@ -82,7 +82,7 @@ const styles = StyleSheet.create({
   },
   container: {
     backgroundColor: '#EDEDED',
-    height: window.height,
+    // height: window.height,
   },
 })
 
