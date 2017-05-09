@@ -16,8 +16,14 @@ const themeColor = {
   theme1: '#ffdb42',
 }
 
+const domain = 'http://princekin.vicp.io:90'
+
+const staticsDomin = `${domain}/statics/`
+
 export {
     window,
     alertTitle,
     themeColor,
+    domain,
+    staticsDomin,
 }

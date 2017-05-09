@@ -18,6 +18,7 @@
     "__DEV__": true
   },
   "rules": {
+    "linebreak-style": ["error", "windows"],
     "arrow-parens": 0,
     "babel/semi": [2, "never"],
     "global-require": 0,
