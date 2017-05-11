@@ -13,6 +13,7 @@ class PlayItem {
     this.name = item.name
     this.source = `${staticsDomin}${item.path}`
     this.words = item.words
+    this.duration = item.duration
     this.sound = null
   }
 
@@ -27,6 +28,10 @@ class PlayItem {
 }
 
 const DISABLEDOPACITY = 0.5
+const LOOPING_TYPE_ALL = 0
+const LOOPING_TYPE_ONE = 1
+const LOOPING_TYPE_RANDOM = 2
+const LOOPING_TYPE_ICONS = { 0: 'bars', 1: 'repeat', 2: 'random' }
 
 @pageDecorator
 @connect(({ audio }) => ({
@@ -38,6 +43,8 @@ class AudioDetail extends Component {
     this.PlayList = []
     this.index = 0
     this.sound = null
+    this.isSeeking = false
+    this.shouldPlayAtEndOfSeek = false
     this.state = {
       sliderValue: 0,
       isloading: false,
@@ -45,7 +52,7 @@ class AudioDetail extends Component {
       duration: null,
       position: null,
       isplaying: false,
-      looptype: '',
+      looptype: LOOPING_TYPE_ALL,
     }
     this.palyPauseAudio = this.palyPauseAudio.bind(this)
   }
@@ -65,12 +72,7 @@ class AudioDetail extends Component {
   componentWillReceiveProps(nextProps) {
     if (nextProps.fetching !== this.props.fetching && !nextProps.fetching) { // 数据已经请求结束
       const audios = nextProps.audios[this.props.id] || []
-      const currentSong = audios.length ? audios[0] : null
-      // this.setState({
-      //   currentSong,
-      // })
       this.PlayList = audios.map((audio) => new PlayItem(audio))
-      this.props.actions.refresh({ title: currentSong.name || 'Error' })
 
       this.updateAudioForIndex()
     }
@@ -85,7 +87,8 @@ class AudioDetail extends Component {
     const sound = await this.PlayList[this.index].getLoadedSound()
     // await sound.setIsLoopingAsync(this.state.loopingType === LOOPING_TYPE_ONE);
     // await sound.setVolumeAsync(this.state.volume);
-    await sound.setVolumeAsync(0)
+    await sound.setVolumeAsync(1)
+    sound.setCallbackPollingMillis(1000)
     sound.setCallback(this.updateStatus)
     this.sound = sound
 
@@ -110,19 +113,20 @@ class AudioDetail extends Component {
         isplaying: false,
       })
     } else {
-      console.log('load false')
+      var curaudio = this.PlayList[this.index]
+      this.props.actions.refresh({ title: curaudio.name || 'Error' })
       this.setState({
         isloading: false,
-        soundname: this.PlayList[this.index].name,
+        soundname: curaudio.name,
+        duration: curaudio.duration,
       })
     }
   }
   updateStatus = (status) => {
     // console.log(JSON.stringify(status))
     if (status.isLoaded) {
-      // console.log(status.positionMillis + '-' + status.isPlaying)
       this.setState({
-        duration: status.durationMillis,
+        // duration: status.durationMillis,
         position: status.positionMillis,
         isplaying: status.isPlaying,
       })
@@ -158,8 +162,40 @@ class AudioDetail extends Component {
   forwardPress = () => {
     if (this.sound != null) {
       this.advanceIndex(true)
-      this.updateAudioForIndex(this.state.isPlaying)
+      console.log(this.state.isplaying)
+      this.updateAudioForIndex(this.state.isplaying)
     }
+  }
+  backPress = () => {
+    if (this.sound != null) {
+      this.advanceIndex(false)
+      this.updateAudioForIndex(this.state.isplaying)
+    }
+  }
+  getSlidePosition(){
+      if(this.sound && this.state.position && this.state.duration){
+          return this.state.position / this.state.duration
+      }
+      return 0
+  }
+  onSeekSliderValueChange = (value) =>{
+    if(this.sound && !this.isSeeking){
+        this.isSeeking = true
+        this.shouldPlayAtEndOfSeek = this.state.isplaying
+        this.sound.pauseAsync()
+    }
+  }
+  onSeekSliderSlidingComplete = async value =>{
+      if(this.sound){
+          this.isSeeking = false
+          await this.sound.setPositionAsync(value * this.state.duration)
+          if(this.shouldPlayAtEndOfSeek){
+              this.sound.playAsync()
+          }
+      }
+  }
+  loopPress = () => {
+      
   }
   // {this.PlayList[this.index].words}
   render() {
@@ -169,8 +205,8 @@ class AudioDetail extends Component {
     if (!this.props.fetching && this.props.loaded) {
       return (
         <ViewPort nobottom>
-          <View style={{ flexGrow: 1, flexBasis: 180, borderBottomWidth: 1, borderBottomColor: '#ccc' }}>
-            <Text>{this.PlayList.length && this.PlayList[this.index].words}</Text>
+          <View style={{ flexGrow: 1, flexBasis: 180, borderBottomWidth: 1, borderBottomColor: '#ccc', justifyContent: 'center', alignItems:'center' }}>
+            <Text style={{fontSize:18}}>{this.PlayList.length && this.PlayList[this.index].words}</Text>
           </View>
           <View
             style={{ height: 50,
@@ -195,11 +231,10 @@ class AudioDetail extends Component {
           >
             <Text>{this.getMMSSFromMillis(this.state.position)}</Text>
             <Slider
-              ref="slider"
               style={{ flex: 1, marginLeft: 4, marginRight: 4 }}
-              value={this.state.sliderValue}
-              maximumValue={5}
-              step={1}
+              value={this.getSlidePosition()}
+              onValueChange={this.onSeekSliderValueChange}
+              onSlidingComplete={this.onSeekSliderSlidingComplete}
               disabled={this.state.isloading}
               minimumTrackTintColor="#FFDB42"
             />
@@ -207,12 +242,12 @@ class AudioDetail extends Component {
           </View>
           <View style={styles.bottomContainer}>
             <View style={{ flex: 1, alignItems: 'center' }}>
-              <IconBtn name="bars" color="#ffdb42" />
+              <IconBtn name={LOOPING_TYPE_ICONS[this.state.looptype]} color="#ffdb42" btnpress={this.loopPress} />
             </View>
             <View style={{ flex: 3, flexDirection: 'row', justifyContent: 'center' }}>
-              <IconBtn name="step-backward" color="#ffdb42" size={50} iconstyle={{ flex: 1, alignItems: 'center' }} />
+              <IconBtn name="step-backward" color="#ffdb42" size={50} iconstyle={{ flex: 1, alignItems: 'center' }} btnpress={this.backPress} />
               <IconBtn name={this.state.isplaying ? 'play-circle' : 'pause-circle'} color="#ffdb42" size={50} btnpress={this.palyPauseAudio} iconstyle={{ flex: 1, alignItems: 'center' }} />
-              <IconBtn name="step-forward" color="#ffdb42" size={50} iconstyle={{ flex: 1, alignItems: 'center' }} />
+              <IconBtn name="step-forward" color="#ffdb42" size={50} iconstyle={{ flex: 1, alignItems: 'center' }} btnpress={this.forwardPress} />
             </View>
             <View style={{ flex: 1, alignItems: 'center' }}>
               <IconBtn name="list" color="#ffdb42" />
