@@ -1,7 +1,7 @@
 // 页面Decorator
 import React, { Component } from 'react'
 import Toast from 'react-native-root-toast'
-import { View, StyleSheet, Platform, Alert } from 'react-native'
+import { View, StyleSheet, Alert } from 'react-native'
 import { Actions } from 'react-native-router-flux'
 import { alertTitle } from '../utils/constants'
 import { createAction } from '../utils'
@@ -59,8 +59,5 @@ export default pageDecorator
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    // height: window.height-280,
-    // paddingTop: Platform.OS === 'ios' ? 64 : 54,
-    // paddingBottom: 50,
   },
 })

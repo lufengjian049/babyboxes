@@ -1,16 +1,17 @@
 import React, { Component } from 'react'
 import { StyleSheet, Text, View, TouchableOpacity,
-    Slider, TouchableHighlight,
+    Slider,
     FlatList, Animated } from 'react-native'
-import pageDecorator from '../hocs/PageDecorator'
-import LoadingSpinner from '../components/LoadingSpinner'
-import ViewPort from '../components/ViewPort'
 import Modal from 'react-native-modalbox'
 import Spinner from 'react-native-loading-spinner-overlay'
 import { Audio } from 'expo'
 import { FontAwesome } from '@expo/vector-icons'
 import { connect } from 'dva/mobile'
+import RNFS from 'react-native-fs'
 import { staticsDomin, window } from '../utils/constants'
+import pageDecorator from '../hocs/PageDecorator'
+import LoadingSpinner from '../components/LoadingSpinner'
+import ViewPort from '../components/ViewPort'
 
 class PlayItem {
   constructor(item) {
@@ -31,7 +32,6 @@ class PlayItem {
   }
 }
 
-const DISABLEDOPACITY = 0.5
 const LOOPING_TYPE_ALL = 0
 const LOOPING_TYPE_ONE = 1
 const LOOPING_TYPE_RANDOM = 2
@@ -66,13 +66,9 @@ class AudioDetail extends Component {
     }
     this.palyPauseAudio = this.palyPauseAudio.bind(this)
   }
-  async emptySound() {
-    if (this.sound) {
-      await this.sound.unloadAsync()
-      this.sound.setCallback(null)
-    }
-  }
   componentDidMount() {
+    console.log(RNFS.CachesDirectoryPath)
+    console.log(RNFS.DocumentDirectoryPath)
     // 获取当前分类下数据
     this.props.dispatch(this.props.createAction('audio/getAudioById')({ id: this.props.id }))
     // 基础设置
@@ -96,30 +92,10 @@ class AudioDetail extends Component {
   componentWillUnmount() {
     this.emptySound()
   }
-  async updateAudioForIndex(playing) {
-    if (this.sound) {
-      await this.sound.unloadAsync()
-      this.sound.setCallback(null)
-    }
-    this.sound = null
-    this.updateAudioLoading(true)
-    const sound = await this.PlayList[this.index].getLoadedSound()
-    await sound.setIsLoopingAsync(this.state.loopingType === LOOPING_TYPE_ONE)
-    // await sound.setVolumeAsync(this.state.volume);
-    await sound.setVolumeAsync(1)
-    sound.setCallbackPollingMillis(1000)
-    sound.setCallback(this.updateStatus)
-    this.sound = sound
-
-    if (playing) {
-      await this.sound.playAsync() // Will call callback to update the screen.
-    } else {
-      await this.sound.getStatusAsync() // Will call callback to update the screen.
-    }
-    this.updateAudioLoading(false)
-  }
   advanceIndex(forward) {
-    if (this.state.looptype === LOOPING_TYPE_RANDOM) { this.randomIndex() } else {
+    if (this.state.looptype === LOOPING_TYPE_RANDOM) {
+      this.randomIndex()
+    } else {
       this.index =
         (this.index + (forward ? 1 : this.PlayList.length - 1)) % this.PlayList.length
     }
@@ -147,10 +123,8 @@ class AudioDetail extends Component {
     }
   }
   updateStatus = (status) => {
-    // console.log(JSON.stringify(status))
     if (status.isLoaded) {
       this.setState({
-        // duration: status.durationMillis,
         position: status.positionMillis,
         isplaying: status.isPlaying,
         // looptype
@@ -202,7 +176,7 @@ class AudioDetail extends Component {
     }
     return 0
   }
-  onSeekSliderValueChange = (value) => {
+  onSeekSliderValueChange = () => {
     if (this.sound && !this.isSeeking) {
       this.isSeeking = true
       this.shouldPlayAtEndOfSeek = this.state.isplaying
@@ -236,7 +210,34 @@ class AudioDetail extends Component {
     this.index = index
     this.updateAudioForIndex(true)
   }
-  // {this.PlayList[this.index].words}
+  async emptySound() {
+    if (this.sound) {
+      await this.sound.unloadAsync()
+      this.sound.setCallback(null)
+    }
+  }
+  //
+  async updateAudioForIndex(playing) {
+    if (this.sound) {
+      await this.sound.unloadAsync()
+      this.sound.setCallback(null)
+    }
+    this.sound = null
+    this.updateAudioLoading(true)
+    const sound = await this.PlayList[this.index].getLoadedSound()
+    await sound.setIsLoopingAsync(this.state.loopingType === LOOPING_TYPE_ONE)
+    await sound.setVolumeAsync(1)
+    sound.setCallbackPollingMillis(1000)
+    sound.setCallback(this.updateStatus)
+    this.sound = sound
+
+    if (playing) {
+      await this.sound.playAsync()
+    } else {
+      await this.sound.getStatusAsync()
+    }
+    this.updateAudioLoading(false)
+  }
   render() {
     if (this.props.fetching) {
       return <LoadingSpinner animating />
@@ -270,9 +271,18 @@ class AudioDetail extends Component {
               <IconBtn name={LOOPING_TYPE_ICONS[this.state.looptype]} color={color} btnpress={this.loopPress} />
             </View>
             <View style={{ flex: 3, flexDirection: 'row', justifyContent: 'center' }}>
-              <IconBtn name="step-backward" color={color} size={50} iconstyle={{ flex: 1, alignItems: 'center' }} btnpress={this.backPress} />
-              <IconBtn name={this.state.isplaying ? 'play-circle' : 'pause-circle'} color={color} size={50} btnpress={this.palyPauseAudio} iconstyle={{ flex: 1, alignItems: 'center' }} />
-              <IconBtn name="step-forward" color={color} size={50} iconstyle={{ flex: 1, alignItems: 'center' }} btnpress={this.forwardPress} />
+              <IconBtn
+                name="step-backward" color={color} size={50} iconstyle={{ flex: 1, alignItems: 'center' }}
+                btnpress={this.backPress}
+              />
+              <IconBtn
+                name={this.state.isplaying ? 'play-circle' : 'pause-circle'} color={color} size={50}
+                btnpress={this.palyPauseAudio} iconstyle={{ flex: 1, alignItems: 'center' }}
+              />
+              <IconBtn
+                name="step-forward" color={color} size={50} iconstyle={{ flex: 1, alignItems: 'center' }}
+                btnpress={this.forwardPress}
+              />
             </View>
             <View style={{ flex: 1, alignItems: 'center' }}>
               <IconBtn name="list" color="#ffdb42" btnpress={() => this.modallist.open()} />
@@ -284,7 +294,10 @@ class AudioDetail extends Component {
             </View>
             <AnimatedFlatList
               key={'modalflatlist'} data={this.audios} renderItem={
-                ({ item, index }) => <ListItem isplaying={(index === this.index) && this.state.isplaying} itemPressToPlay={this.itemPressToPlay} {...item} index={index} />
+                ({ item, index }) => <ListItem
+                  isplaying={(index === this.index) && this.state.isplaying}
+                  itemPressToPlay={this.itemPressToPlay} {...item} index={index}
+                />
               }
               style={styles.modalflatlist} keyExtractor={(item) => item.id}
             />
@@ -294,10 +307,11 @@ class AudioDetail extends Component {
               </View>
             </TouchableOpacity>
           </Modal>
-          <Spinner visible={this.state.isloading} textContent={'加载音乐ing...'} />
+          <Spinner visible={this.state.isloading} textContent={'加载音乐ing...'} textStyle={color} />
         </ViewPort>
       )
     }
+    return null
   }
 }
 
@@ -325,12 +339,9 @@ const IconBtn = (props) => (
 
 const styles = StyleSheet.create({
   bottomContainer: {
-    // bottom: 0 ,
     height: 80,
     flexDirection: 'row',
     justifyContent: 'center',
-    // paddingBottom: 10,
-    // backgroundColor: '#ccc',
     alignItems: 'center',
   },
   wordsWrapper: {
