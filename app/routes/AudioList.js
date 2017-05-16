@@ -7,6 +7,7 @@ import { connect } from 'dva/mobile'
 import {
   List, ListItem,
 } from 'react-native-elements'
+import pureRender from 'pure-render-decorator'
 
 import pageDecorator from '../hocs/PageDecorator'
 
@@ -29,6 +30,7 @@ const list = [
   },
 ]
 
+@pureRender
 @pageDecorator
 @connect(({ audio }) => ({
   ...audio,

@@ -4,10 +4,11 @@ import { StyleSheet, Text, View, TouchableOpacity,
     FlatList, Animated } from 'react-native'
 import Modal from 'react-native-modalbox'
 import Spinner from 'react-native-loading-spinner-overlay'
+import pureRender from 'pure-render-decorator'
 import { Audio } from 'expo'
 import { FontAwesome } from '@expo/vector-icons'
 import { connect } from 'dva/mobile'
-import RNFS from 'react-native-fs'
+// import RNFS from 'react-native-fs'
 import { staticsDomin, window } from '../utils/constants'
 import pageDecorator from '../hocs/PageDecorator'
 import LoadingSpinner from '../components/LoadingSpinner'
@@ -42,6 +43,7 @@ const AnimatedFlatList = Animated.createAnimatedComponent(FlatList)
 
 const color = '#FFDB42'
 
+@pureRender
 @pageDecorator
 @connect(({ audio }) => ({
   ...audio,
@@ -67,8 +69,8 @@ class AudioDetail extends Component {
     this.palyPauseAudio = this.palyPauseAudio.bind(this)
   }
   componentDidMount() {
-    console.log(RNFS.CachesDirectoryPath)
-    console.log(RNFS.DocumentDirectoryPath)
+    // console.log(RNFS.CachesDirectoryPath)
+    // console.log(RNFS.DocumentDirectoryPath)
     // 获取当前分类下数据
     this.props.dispatch(this.props.createAction('audio/getAudioById')({ id: this.props.id }))
     // 基础设置

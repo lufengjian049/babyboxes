@@ -1,5 +1,15 @@
 {
   "expo": {
-    "sdkVersion": "16.0.0"
+    "name": "babyboxes",
+    "icon": "https://s3.amazonaws.com/exp-us-standard/rnplay/app-icon.png",
+    "version": "0.1.0",
+    "slug": "babyboxes",
+    "sdkVersion": "16.0.0",
+    "ios": {
+      "bundleIdentifier": "com.princekin.babyboxes"
+    },
+    "android": {
+      "package": "com.princekin.babyboxes"
+    }
   }
 }
